@@ -19,7 +19,7 @@
      <widget class="QPushButton" name="selectFolder">
       <property name="styleSheet">
        <string notr="true">font: 350 11pt &quot;Segoe UI&quot;;
-background-color: rgb(170, 255, 255);</string>
+background-color: rgb(240, 255, 231);</string>
       </property>
       <property name="text">
        <string>Select Folder</string>
@@ -31,8 +31,8 @@ background-color: rgb(170, 255, 255);</string>
       <item row="0" column="1">
        <widget class="QPushButton" name="ScanBtn">
         <property name="styleSheet">
-         <string notr="true">background-color: rgb(170, 255, 255);
-font: 12pt &quot;Segoe UI&quot;;</string>
+         <string notr="true">font: 12pt &quot;Segoe UI&quot;;
+background-color: rgb(240, 255, 231);</string>
         </property>
         <property name="text">
          <string>Scan</string>
@@ -40,7 +40,11 @@ font: 12pt &quot;Segoe UI&quot;;</string>
        </widget>
       </item>
       <item row="0" column="0">
-       <widget class="QTableWidget" name="tableWidget"/>
+       <widget class="QTableWidget" name="tableWidget">
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(255, 244, 235);</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>
@@ -63,8 +67,6 @@ font: 12pt &quot;Segoe UI&quot;;</string>
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionOpen"/>
-   <addaction name="separator"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">
