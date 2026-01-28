@@ -25,6 +25,7 @@ public:
     ~FileSizeScanner();
 
 private:
+    void mySetupUI();
     void setupTable();
     void scanFolder(const QString& path);
     void fillTable(const QVector<FileInfo>& files);
