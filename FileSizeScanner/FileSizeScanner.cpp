@@ -62,7 +62,7 @@ void FileSizeScanner::setupTable()
     tableWidget->setColumnCount(3);
 
     QStringList headers;
-    headers << "File Name" << "File Size (Bytes)" << "Full Path";
+    headers << "File Name" << "File Size" << "Full Path";
     tableWidget->setHorizontalHeaderLabels(headers);
 
     tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
