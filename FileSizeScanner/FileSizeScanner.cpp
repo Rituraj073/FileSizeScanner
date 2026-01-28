@@ -109,6 +109,23 @@ void FileSizeScanner::scanFolder(const QString& path)
 }
 
 
+QString FileSizeScanner::formatFileSize(quint64 bytes)
+{
+    const double kb = 1024.0;
+    const double mb = kb * 1024.0;
+    const double gb = mb * 1024.0;
+
+    if (bytes < kb)
+        return QString("%1 B").arg(bytes);
+    else if (bytes < mb)
+        return QString("%1 KB").arg(bytes / kb, 0, 'f', 2);
+    else if (bytes < gb)
+        return QString("%1 MB").arg(bytes / mb, 0, 'f', 2);
+    else
+        return QString("%1 GB").arg(bytes / gb, 0, 'f', 2);
+}
+
+
 void FileSizeScanner::fillTable(const QVector<FileInfo>& files)
 {
     tableWidget->setRowCount(0);
@@ -122,7 +139,7 @@ void FileSizeScanner::fillTable(const QVector<FileInfo>& files)
             new QTableWidgetItem(file.fileName));
 
         tableWidget->setItem(row, 1,
-            new QTableWidgetItem(QString::number(file.fileSize)));
+            new QTableWidgetItem(formatFileSize(file.fileSize)));
 
         tableWidget->setItem(row, 2,
             new QTableWidgetItem(file.filePath));

@@ -28,6 +28,7 @@ private:
     void mySetupUI();
     void setupTable();
     void scanFolder(const QString& path);
+    static QString formatFileSize(quint64 bytes);
     void fillTable(const QVector<FileInfo>& files);
 
     Ui::FileSizeScannerClass ui;
