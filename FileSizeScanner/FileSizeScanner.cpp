@@ -65,7 +65,10 @@ void FileSizeScanner::on_scan_clicked()
 {
     QString path = lineEditPath->text();
     if (path.isEmpty())
+    {
+        QMessageBox::information(this, "Scaned", "No duplicates files present");
         return;
+    } 
 
     scanFolder(path);
     QVector<FileInfo> duplicates;
@@ -76,7 +79,13 @@ void FileSizeScanner::on_scan_clicked()
             duplicates += it.value();
     }
 
+    if (duplicates.isEmpty())
+    {
+        QMessageBox::information(this, "Scaned", "No duplicates files present");
+        return;
+    }
     fillTable(duplicates);
+    QMessageBox::information(this, "Scaned", "Duplicates files present");
 }
 
 
