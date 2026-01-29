@@ -29,4 +29,5 @@ signals:
     void scanFinished(QHash<quint64, QVector<FileInfo>> result);
     void progressRange(int max);
     void progressValue(int current);
+    void progressText(int current, int total);
 };

@@ -47,10 +47,14 @@ void ScanWorker::scan(const QString& path)
 
         // Throttle UI updates (every 50 files)
         if (scanned % 50 == 0)
+        {
             emit progressValue(scanned);
+            emit progressText(scanned, totalFiles);
+        }
     }
 
     emit progressValue(scanned); // final update
+    emit progressText(scanned, totalFiles);
     emit scanFinished(localMap);
 }
 

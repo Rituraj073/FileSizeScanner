@@ -130,6 +130,16 @@ void FileSizeScanner::StartScanWorker(QString& path)
     connect(worker, &ScanWorker::progressValue,
         progressDialog, &QProgressDialog::setValue);
 
+    connect(worker, &ScanWorker::progressText,
+        this, [=](int current, int total)
+        {
+            progressDialog->setLabelText(
+                QString("Scanning files...\n%1 / %2 files scanned")
+                .arg(current)
+                .arg(total)
+            );
+        });
+
     connect(scanThread, &QThread::started,
         [=]() { worker->scan(path); });
 
