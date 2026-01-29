@@ -5,16 +5,8 @@
 #include <qpushbutton.h>
 #include <qfiledialog.h>
 #include <qtablewidget.h>
-#include <QString>
-#include <QVector>
-#include <QHash>
-
-struct FileInfo
-{
-    QString fileName;
-    QString filePath;
-    quint64 fileSize;
-};
+#include "ScanWorker.h"
+#include <QThread>
 
 class FileSizeScanner : public QMainWindow
 {
@@ -27,7 +19,6 @@ public:
 private:
     void mySetupUI();
     void setupTable();
-    void scanFolder(const QString& path);
     bool fillTable();
 
     Ui::FileSizeScannerClass ui;
@@ -35,6 +26,9 @@ private:
     QPushButton* btnSelectFolder;
     QPushButton* btnScan;
     QTableWidget* tableWidget;
+
+    QThread* scanThread = nullptr;
+    ScanWorker* worker = nullptr;
 
     QHash<quint64, QVector<FileInfo>> sizeMap;
 

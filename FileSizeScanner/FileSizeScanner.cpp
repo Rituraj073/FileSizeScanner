@@ -2,7 +2,7 @@
 #include "FileSizeScanner.h"
 #include <QDirIterator>
 #include <QFileInfo>
-#include <qmessagebox.h>
+#include <QMessageBox>
 
 /* ---------- Helper: Human-readable file size ---------- */
 static QString formatFileSize(quint64 bytes)
@@ -95,38 +95,44 @@ void FileSizeScanner::on_scan_clicked()
     QString path = lineEditPath->text();
     if (path.isEmpty())
     {
-        QMessageBox::information(this, "Scaned", "Path Empty");
+        QMessageBox::warning(this, "Scaned", "Path is Empty");
         return;
     } 
 
-    scanFolder(path);
-    if (fillTable()) QMessageBox::information(this, "Scaned", "Duplicates files present");
-    else QMessageBox::information(this, "Scaned", "No Duplicates files present");
-}
+    btnScan->setEnabled(false);
+    tableWidget->setRowCount(0);
 
+    scanThread = new QThread(this);
+    worker = new ScanWorker();
 
-void FileSizeScanner::scanFolder(const QString& path)
-{
-    sizeMap.clear();
-    QDirIterator it(path, QDir::Files, QDirIterator::Subdirectories);
+    worker->moveToThread(scanThread);
 
-    while (it.hasNext())
-    {
-        QString filePath = it.next();
-        QFileInfo info(filePath);
+    connect(scanThread, &QThread::started,
+        [=]() { worker->scan(path); });
 
-        FileInfo file;
-        file.fileName = info.fileName();
-        file.filePath = info.absoluteFilePath();
-        file.fileSize = info.size();
+    connect(worker, &ScanWorker::scanFinished,
+        this, [=](QHash<quint64, QVector<FileInfo>> result)
+        {
+            sizeMap = result;
+            bool hasDuplicates = fillTable();
 
-        sizeMap[file.fileSize].push_back(file);
-    }
+            btnScan->setEnabled(true);
+
+            QMessageBox::information(this, "Scan", hasDuplicates ? "Duplicate files found" : "No duplicate files");
+
+            scanThread->quit();
+        });
+
+    connect(scanThread, &QThread::finished, worker, &QObject::deleteLater);
+    connect(scanThread, &QThread::finished, scanThread, &QObject::deleteLater);
+
+    scanThread->start();
 }
 
 
 bool FileSizeScanner::fillTable()
 {
+    bool hasDuplicates = false;
     tableWidget->setRowCount(0);
 
     for (auto it = sizeMap.begin(); it != sizeMap.end(); ++it)
@@ -134,19 +140,17 @@ bool FileSizeScanner::fillTable()
         const QVector<FileInfo>& files = it.value();
         if (files.size() < 2)
             continue;
+        hasDuplicates = true;
 
         // Group header
         int headerRow = tableWidget->rowCount();
         tableWidget->insertRow(headerRow);
         tableWidget->setSpan(headerRow, 0, 1, 3);
 
-        tableWidget->setItem(
-            headerRow, 0,
+        tableWidget->setItem( headerRow, 0,
             createGroupItem(QString("Size: %1 (%2 files)")
             .arg(formatFileSize(it.key()))
-            .arg(files.size())
-            )
-        );
+            .arg(files.size())));
 
         // File rows
         for (const FileInfo& file : files)
@@ -154,16 +158,10 @@ bool FileSizeScanner::fillTable()
             int row = tableWidget->rowCount();
             tableWidget->insertRow(row);
 
-            tableWidget->setItem(row, 0,
-                new QTableWidgetItem(file.fileName));
-
-            tableWidget->setItem(row, 1,
-                new QTableWidgetItem(
-                    formatFileSize(file.fileSize)));
-
-            tableWidget->setItem(row, 2,
-                new QTableWidgetItem(file.filePath));
+            tableWidget->setItem(row, 0, new QTableWidgetItem(file.fileName));
+            tableWidget->setItem(row, 1, new QTableWidgetItem(formatFileSize(file.fileSize)));
+            tableWidget->setItem(row, 2, new QTableWidgetItem(file.filePath));
         }
     }
-    if (tableWidget->rowCount() == 0) return false;
+    return hasDuplicates;
 }
