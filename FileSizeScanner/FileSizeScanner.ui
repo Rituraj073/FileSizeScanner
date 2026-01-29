@@ -13,44 +13,87 @@
   <property name="windowTitle">
    <string>FileSizeScanner</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout_2">
     <item row="0" column="0">
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="2">
-       <widget class="QPushButton" name="ScanBtn">
-        <property name="cursor">
-         <cursorShape>PointingHandCursor</cursorShape>
-        </property>
+      <item row="1" column="0">
+       <widget class="QTableWidget" name="tableWidget">
         <property name="styleSheet">
-         <string notr="true">font: 12pt &quot;Segoe UI&quot;;
-background-color: rgb(240, 255, 231);</string>
-        </property>
-        <property name="text">
-         <string>Scan</string>
+         <string notr="true">background-color: rgb(246, 255, 250);</string>
         </property>
        </widget>
       </item>
       <item row="0" column="0">
-       <widget class="QTableWidget" name="tableWidget">
+       <widget class="QLabel" name="label">
         <property name="styleSheet">
-         <string notr="true">background-color: rgb(255, 244, 235);</string>
+         <string notr="true">font: 900 15pt &quot;Segoe UI&quot;;
+color: rgb(255, 85, 0);</string>
+        </property>
+        <property name="text">
+         <string>File Size Scanner</string>
+        </property>
+        <property name="textFormat">
+         <enum>Qt::TextFormat::AutoText</enum>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignmentFlag::AlignCenter</set>
         </property>
        </widget>
       </item>
      </layout>
     </item>
-    <item row="1" column="0">
+    <item row="4" column="0">
      <widget class="QPushButton" name="selectFolder">
+      <property name="font">
+       <font>
+        <family>Segoe UI</family>
+        <pointsize>12</pointsize>
+        <italic>false</italic>
+        <fontweight>Black</fontweight>
+       </font>
+      </property>
+      <property name="cursor">
+       <cursorShape>PointingHandCursor</cursorShape>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font: 900 12pt &quot;Segoe UI&quot;;
+background-color: rgb(243, 243, 243);</string>
+      </property>
+      <property name="text">
+       <string>Select Folder</string>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>16</width>
+        <height>16</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <widget class="QPushButton" name="ScanBtn">
       <property name="cursor">
        <cursorShape>PointingHandCursor</cursorShape>
       </property>
       <property name="styleSheet">
-       <string notr="true">font: 350 11pt &quot;Segoe UI&quot;;
-background-color: rgb(240, 255, 231);</string>
+       <string notr="true">font: 900 12pt &quot;Segoe UI&quot;;
+background-color: rgb(243, 243, 243);</string>
       </property>
       <property name="text">
-       <string>Select Folder</string>
+       <string>Scan</string>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>16</width>
+        <height>16</height>
+       </size>
       </property>
      </widget>
     </item>
