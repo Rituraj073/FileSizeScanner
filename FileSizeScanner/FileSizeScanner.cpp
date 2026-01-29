@@ -1,9 +1,11 @@
 #include "stdafx.h"
 #include "FileSizeScanner.h"
-#include <QDirIterator>
+#include <QMenu>
+#include <QDesktopServices>
+#include <QUrl>
+#include <QFile>
 #include <QFileInfo>
 #include <QMessageBox>
-#include <QProgressDialog>
 
 /* ---------- Helper: Human-readable file size ---------- */
 static QString formatFileSize(quint64 bytes)
@@ -54,6 +56,9 @@ void FileSizeScanner::mySetupUI()
 
     setupTable();
 
+    tableWidget->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    connect(tableWidget, &QTableWidget::customContextMenuRequested, this, &FileSizeScanner::onTableContextMenu);
     connect(btnSelectFolder, &QPushButton::clicked, this, &FileSizeScanner::on_select_folder_clicked);
     connect(btnScan, &QPushButton::clicked, this, &FileSizeScanner::on_scan_clicked);
     connect(cleanTable, &QAction::triggered, this, [=]() { tableWidget->setRowCount(0); });
@@ -103,6 +108,72 @@ void FileSizeScanner::on_scan_clicked()
     }
 
     StartScanWorker(path);
+}
+
+
+void FileSizeScanner::onTableContextMenu(const QPoint& pos)
+{
+    QTableWidgetItem* item = tableWidget->itemAt(pos);
+    if (!item)
+        return;
+
+    int row = item->row();
+
+    // Ignore group header rows (they span all columns)
+    if (tableWidget->columnSpan(row, 0) > 1)
+        return;
+
+    QString filePath = tableWidget->item(row, 2)->text();
+    QFileInfo fileInfo(filePath);
+
+    QMenu menu(this);
+
+    QAction* openLocation = menu.addAction("Open File Location");
+    QAction* copyFile = menu.addAction("Copy File Name");
+    QAction* deleteFile = menu.addAction("Delete File");
+
+    QAction* selectedAction =
+        menu.exec(tableWidget->viewport()->mapToGlobal(pos));
+
+    if (selectedAction == openLocation)
+    {
+        // Open containing folder
+        QDesktopServices::openUrl(QUrl::fromLocalFile(fileInfo.absolutePath()));
+    }
+    else if (selectedAction == copyFile)
+    {
+        QApplication::clipboard()->setText(fileInfo.fileName());
+        QMessageBox::information(this, "File Info", "File Name copied");
+    }
+    else if (selectedAction == deleteFile)
+    {
+        // ---- Safety confirmation ----
+        QMessageBox::StandardButton reply =
+            QMessageBox::warning(
+                this,
+                "Delete File",
+                QString("Are you sure you want to permanently delete:\n\n%1")
+                .arg(fileInfo.fileName()),
+                QMessageBox::Yes | QMessageBox::No,
+                QMessageBox::No);
+
+        if (reply != QMessageBox::Yes)
+            return;
+
+        // ---- Delete file ----
+        if (QFile::remove(filePath))
+        {
+            tableWidget->removeRow(row);
+        }
+        else
+        {
+            QMessageBox::critical(
+                this,
+                "Delete Failed",
+                "Unable to delete the file.\n"
+                "It may be in use or you may not have permission.");
+        }
+    }
 }
 
 

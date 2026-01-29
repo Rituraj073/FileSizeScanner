@@ -37,5 +37,6 @@ private:
 private slots:
     void on_select_folder_clicked();
     void on_scan_clicked();
+    void onTableContextMenu(const QPoint& pos);
 };
 
