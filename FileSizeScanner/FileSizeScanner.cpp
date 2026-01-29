@@ -99,6 +99,12 @@ void FileSizeScanner::on_scan_clicked()
         return;
     } 
 
+    StartScanWorker(path);
+}
+
+
+void FileSizeScanner::StartScanWorker(QString& path)
+{
     btnScan->setEnabled(false);
     tableWidget->setRowCount(0);
 
