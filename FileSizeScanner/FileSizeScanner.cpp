@@ -122,7 +122,7 @@ void FileSizeScanner::StartScanWorker(QString& path)
     worker = new ScanWorker();
     worker->moveToThread(scanThread);
 
-    //connect(worker, &ScanWorker::progress, this, [=]() {});
+    connect(worker, &ScanWorker::progress, this, [=]() {});
 
     connect(scanThread, &QThread::started,
         [=]() { worker->scan(path); });

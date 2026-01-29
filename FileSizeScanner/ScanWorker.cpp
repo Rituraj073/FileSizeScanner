@@ -25,7 +25,7 @@ void ScanWorker::scan(const QString& path)
         file.fileSize = info.size();
 
         localMap[file.fileSize].push_back(file);
-        //emit progress();
+        emit progress();
     }
 
     emit scanFinished(localMap);
