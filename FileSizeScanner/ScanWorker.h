@@ -27,5 +27,6 @@ public slots:
 
 signals:
     void scanFinished(QHash<quint64, QVector<FileInfo>> result);
-    void progress();
+    void progressRange(int max);
+    void progressValue(int current);
 };

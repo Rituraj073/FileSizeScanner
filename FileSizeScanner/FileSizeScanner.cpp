@@ -121,8 +121,14 @@ void FileSizeScanner::StartScanWorker(QString& path)
     scanThread = new QThread(this);
     worker = new ScanWorker();
     worker->moveToThread(scanThread);
+    
+    // Set progress range when total count is known
+    connect(worker, &ScanWorker::progressRange,
+        progressDialog, &QProgressDialog::setMaximum);
 
-    connect(worker, &ScanWorker::progress, this, [=]() {});
+    // Update progress value
+    connect(worker, &ScanWorker::progressValue,
+        progressDialog, &QProgressDialog::setValue);
 
     connect(scanThread, &QThread::started,
         [=]() { worker->scan(path); });
@@ -144,7 +150,7 @@ void FileSizeScanner::StartScanWorker(QString& path)
 
             btnScan->setEnabled(true);
 
-            QMessageBox::information(this, "Scan Complete", hasDuplicates ? "Duplicate files found" : "No duplicate files");
+            QMessageBox::information(this, "Scan Completed", hasDuplicates ? "Duplicate files found" : "No duplicate files");
 
             scanThread->quit();
         });
