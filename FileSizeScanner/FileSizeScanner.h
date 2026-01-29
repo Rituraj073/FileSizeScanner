@@ -26,6 +26,7 @@ private:
     QLineEdit* lineEditPath;
     QPushButton* btnSelectFolder;
     QPushButton* btnScan;
+    QAction* cleanTable;
     QTableWidget* tableWidget;
 
     QThread* scanThread = nullptr;

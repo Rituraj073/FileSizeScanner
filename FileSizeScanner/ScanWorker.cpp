@@ -8,12 +8,15 @@ ScanWorker::ScanWorker(QObject* parent)
 
 void ScanWorker::scan(const QString& path)
 {
-    QHash<quint64, QVector<FileInfo>> localMap;
+    m_cancelRequested = false;
 
+    QHash<quint64, QVector<FileInfo>> localMap;
     QDirIterator it(path, QDir::Files, QDirIterator::Subdirectories);
 
     while (it.hasNext())
     {
+        if (m_cancelRequested)
+            break;
         QFileInfo info(it.next());
 
         FileInfo file;
@@ -22,7 +25,13 @@ void ScanWorker::scan(const QString& path)
         file.fileSize = info.size();
 
         localMap[file.fileSize].push_back(file);
+        //emit progress();
     }
 
     emit scanFinished(localMap);
+}
+
+void ScanWorker::cancel()
+{
+    m_cancelRequested = true;
 }

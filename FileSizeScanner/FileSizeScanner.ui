@@ -15,21 +15,13 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout_2">
-    <item row="1" column="0">
-     <widget class="QPushButton" name="selectFolder">
-      <property name="styleSheet">
-       <string notr="true">font: 350 11pt &quot;Segoe UI&quot;;
-background-color: rgb(240, 255, 231);</string>
-      </property>
-      <property name="text">
-       <string>Select Folder</string>
-      </property>
-     </widget>
-    </item>
     <item row="0" column="0">
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="1">
+      <item row="0" column="2">
        <widget class="QPushButton" name="ScanBtn">
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
         <property name="styleSheet">
          <string notr="true">font: 12pt &quot;Segoe UI&quot;;
 background-color: rgb(240, 255, 231);</string>
@@ -47,6 +39,20 @@ background-color: rgb(240, 255, 231);</string>
        </widget>
       </item>
      </layout>
+    </item>
+    <item row="1" column="0">
+     <widget class="QPushButton" name="selectFolder">
+      <property name="cursor">
+       <cursorShape>PointingHandCursor</cursorShape>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font: 350 11pt &quot;Segoe UI&quot;;
+background-color: rgb(240, 255, 231);</string>
+      </property>
+      <property name="text">
+       <string>Select Folder</string>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -67,20 +73,18 @@ background-color: rgb(240, 255, 231);</string>
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionCleanTable"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="actionOpen">
+  <action name="actionCleanTable">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::DocumentOpen"/>
+    <iconset theme="QIcon::ThemeIcon::EditDelete"/>
    </property>
    <property name="text">
-    <string>Open</string>
+    <string>CleanTable</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+O</string>
-   </property>
-   <property name="menuRole">
-    <enum>QAction::MenuRole::NoRole</enum>
+    <string>Ctrl+X</string>
    </property>
   </action>
  </widget>

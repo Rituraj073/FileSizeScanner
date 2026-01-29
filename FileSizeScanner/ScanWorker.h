@@ -18,9 +18,14 @@ class ScanWorker : public QObject
 public:
     ScanWorker(QObject* parent = nullptr);
 
+private:
+    std::atomic_bool m_cancelRequested{ false };
+
 public slots:
     void scan(const QString& path);
+    void cancel();
 
 signals:
     void scanFinished(QHash<quint64, QVector<FileInfo>> result);
+    //void progress();
 };

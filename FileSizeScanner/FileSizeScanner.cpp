@@ -3,6 +3,7 @@
 #include <QDirIterator>
 #include <QFileInfo>
 #include <QMessageBox>
+#include <QProgressDialog>
 
 /* ---------- Helper: Human-readable file size ---------- */
 static QString formatFileSize(quint64 bytes)
@@ -49,11 +50,13 @@ void FileSizeScanner::mySetupUI()
     btnSelectFolder = ui.selectFolder;
     btnScan = ui.ScanBtn;
     tableWidget = ui.tableWidget;
+    cleanTable = ui.actionCleanTable;
 
     setupTable();
 
     connect(btnSelectFolder, &QPushButton::clicked, this, &FileSizeScanner::on_select_folder_clicked);
     connect(btnScan, &QPushButton::clicked, this, &FileSizeScanner::on_scan_clicked);
+    connect(cleanTable, &QAction::triggered, this, [=]() { tableWidget->setRowCount(0); });
 }
 
 void FileSizeScanner::setupTable()
@@ -95,9 +98,9 @@ void FileSizeScanner::on_scan_clicked()
     QString path = lineEditPath->text();
     if (path.isEmpty())
     {
-        QMessageBox::warning(this, "Scaned", "Path is Empty");
+        QMessageBox::warning(this, "Scaned", "Path is Empty, Select folder");
         return;
-    } 
+    }
 
     StartScanWorker(path);
 }
@@ -105,16 +108,30 @@ void FileSizeScanner::on_scan_clicked()
 
 void FileSizeScanner::StartScanWorker(QString& path)
 {
+    QProgressDialog* progressDialog = new QProgressDialog("Scanning files...", "Cancel", 0, 0, this);
+    progressDialog->setWindowTitle("Scanning");
+    progressDialog->setWindowModality(Qt::ApplicationModal);
+    progressDialog->setAutoClose(false);
+    progressDialog->setAutoReset(false);
+    progressDialog->show();
+
     btnScan->setEnabled(false);
     tableWidget->setRowCount(0);
 
     scanThread = new QThread(this);
     worker = new ScanWorker();
-
     worker->moveToThread(scanThread);
+
+    //connect(worker, &ScanWorker::progress, this, [=]() {});
 
     connect(scanThread, &QThread::started,
         [=]() { worker->scan(path); });
+
+    connect(progressDialog, &QProgressDialog::canceled,
+        this, [=]()
+        {
+            if (worker) worker->cancel();
+        });
 
     connect(worker, &ScanWorker::scanFinished,
         this, [=](QHash<quint64, QVector<FileInfo>> result)
@@ -122,9 +139,12 @@ void FileSizeScanner::StartScanWorker(QString& path)
             sizeMap = result;
             bool hasDuplicates = fillTable();
 
+            progressDialog->close();
+            progressDialog->deleteLater();
+
             btnScan->setEnabled(true);
 
-            QMessageBox::information(this, "Scan", hasDuplicates ? "Duplicate files found" : "No duplicate files");
+            QMessageBox::information(this, "Scan Complete", hasDuplicates ? "Duplicate files found" : "No duplicate files");
 
             scanThread->quit();
         });
