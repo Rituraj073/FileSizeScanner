@@ -221,7 +221,7 @@ void FileSizeScanner::StartScanWorker(QString& path)
         });
 
     connect(worker, &ScanWorker::scanFinished,
-        this, [=](QHash<quint64, QVector<FileInfo>> result)
+        this, [=](std::map<quint64, std::vector<FileInfo>> result)
         {
             sizeMap = result;
             bool hasDuplicates = fillTable();
@@ -250,7 +250,7 @@ bool FileSizeScanner::fillTable()
 
     for (auto it = sizeMap.begin(); it != sizeMap.end(); ++it)
     {
-        const QVector<FileInfo>& files = it.value();
+        const std::vector<FileInfo>& files = it->second;
         if (files.size() < 2)
             continue;
         hasDuplicates = true;
@@ -262,7 +262,7 @@ bool FileSizeScanner::fillTable()
 
         tableWidget->setItem( headerRow, 0,
             createGroupItem(QString("Size: %1 (%2 files)")
-            .arg(formatFileSize(it.key()))
+            .arg(formatFileSize(it->first))
             .arg(files.size())));
 
         // File rows

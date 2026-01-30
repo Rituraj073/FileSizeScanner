@@ -25,7 +25,7 @@ void ScanWorker::scan(const QString& path)
     emit progressRange(totalFiles);
 
     // -------- Phase 2: Actual scan --------
-    QHash<quint64, QVector<FileInfo>> localMap;
+    std::map<quint64, std::vector<FileInfo>> localMap;
     int scanned = 0;
 
     QDirIterator it(path, QDir::Files, QDirIterator::Subdirectories);

@@ -1,15 +1,8 @@
 #pragma once
 #include <QObject>
-#include <QHash>
-#include <QVector>
-#include <QString>
-
-struct FileInfo
-{
-    QString fileName;
-    QString filePath;
-    quint64 fileSize;
-};
+#include <vector>
+#include <map>
+#include "FileInfo.h"
 
 class ScanWorker : public QObject
 {
@@ -26,7 +19,7 @@ public slots:
     void cancel();
 
 signals:
-    void scanFinished(QHash<quint64, QVector<FileInfo>> result);
+    void scanFinished(std::map<quint64, std::vector<FileInfo>> result);
     void progressRange(int max);
     void progressValue(int current);
     void progressText(int current, int total);

@@ -32,7 +32,7 @@ private:
     QThread* scanThread = nullptr;
     ScanWorker* worker = nullptr;
 
-    QHash<quint64, QVector<FileInfo>> sizeMap;
+    std::map<quint64, std::vector<FileInfo>> sizeMap;
 
 private slots:
     void on_select_folder_clicked();
