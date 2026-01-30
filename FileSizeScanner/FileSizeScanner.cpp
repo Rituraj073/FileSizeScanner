@@ -75,7 +75,7 @@ void FileSizeScanner::setupTable()
 
     tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
-    tableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
+    tableWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
     tableWidget->horizontalHeader()->setStretchLastSection(true);
     tableWidget->setRowCount(0);
 }
