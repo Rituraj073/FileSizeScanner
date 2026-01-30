@@ -2,6 +2,7 @@
 #include <QObject>
 #include <vector>
 #include <map>
+#include <atomic>
 #include "FileInfo.h"
 
 class ScanWorker : public QObject

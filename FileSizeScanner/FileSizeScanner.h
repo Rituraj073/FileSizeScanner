@@ -19,7 +19,7 @@ public:
 private:
     void mySetupUI();
     void setupTable();
-    void StartScanWorker(QString& path);
+    void StartScanWorker(const QString& path);
     bool fillTable();
 
     Ui::FileSizeScannerClass ui;

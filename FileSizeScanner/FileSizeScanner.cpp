@@ -48,7 +48,7 @@ FileSizeScanner::~FileSizeScanner()
 
 void FileSizeScanner::mySetupUI()
 {
-    lineEditPath = new QLineEdit();
+    lineEditPath = ui.lineEditPath;
     btnSelectFolder = ui.selectFolder;
     btnScan = ui.ScanBtn;
     tableWidget = ui.tableWidget;
@@ -177,7 +177,7 @@ void FileSizeScanner::onTableContextMenu(const QPoint& pos)
 }
 
 
-void FileSizeScanner::StartScanWorker(QString& path)
+void FileSizeScanner::StartScanWorker(const QString& path)
 {
     QProgressDialog* progressDialog = new QProgressDialog("Scanning files...", "Cancel", 0, 0, this);
     progressDialog->setWindowTitle("Scanning");

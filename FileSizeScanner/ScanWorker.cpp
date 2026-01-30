@@ -32,7 +32,10 @@ void ScanWorker::scan(const QString& path)
     while (it.hasNext())
     {
         if (m_cancelRequested)
-            break;
+        {
+            emit scanFinished({});
+            return;
+        }
 
         QFileInfo info(it.next());
 
