@@ -204,11 +204,11 @@ void FileSizeScanner::onTableContextMenu(const QPoint& pos)
 
     QMenu menu(this);
 
-    QAction* openLocation = menu.addAction("Open File Location");
-    QAction* copyFile = menu.addAction("Copy File Name");
-    QAction* deleteFile = menu.addAction("Delete File");
-    QAction* deleteOthers = menu.addAction("Delete All Except This");
-    QAction* deleteSelected = menu.addAction("Delete Selected Files");
+    QAction* openLocation = menu.addAction(menu.style()->standardIcon(QStyle::SP_DialogOpenButton), "Open File Location");
+    QAction* copyFile = menu.addAction(menu.style()->standardIcon(QStyle::SP_FileDialogNewFolder), "Copy File Name");
+    QAction* deleteFile = menu.addAction(menu.style()->standardIcon(QStyle::SP_TrashIcon), "Delete File");
+    QAction* deleteOthers = menu.addAction(menu.style()->standardIcon(QStyle::SP_TrashIcon), "Delete All Except This");
+    QAction* deleteSelected = menu.addAction(menu.style()->standardIcon(QStyle::SP_TrashIcon), "Delete Selected Files");
 
     QAction* selectedAction = menu.exec(tableWidget->viewport()->mapToGlobal(pos));
 
