@@ -36,6 +36,18 @@ static QTableWidgetItem* createGroupItem(const QString& text)
     return item;
 }
 
+/* ---------- Find: Group header row ---------- */
+static int findGroupHeaderRow(QTableWidget* table, int row)
+{
+    for (int r = row; r >= 0; --r)
+    {
+        if (table->columnSpan(r, 0) > 1)
+            return r;
+    }
+    return -1;
+}
+
+
 FileSizeScanner::FileSizeScanner(QWidget *parent)
     : QMainWindow(parent)
 {
@@ -131,6 +143,8 @@ void FileSizeScanner::onTableContextMenu(const QPoint& pos)
     QAction* openLocation = menu.addAction("Open File Location");
     QAction* copyFile = menu.addAction("Copy File Name");
     QAction* deleteFile = menu.addAction("Delete File");
+    QAction* deleteOthers = menu.addAction("Delete All Except This");
+    QAction* deleteSelected = menu.addAction("Delete Selected Files");
 
     QAction* selectedAction =
         menu.exec(tableWidget->viewport()->mapToGlobal(pos));
@@ -163,8 +177,37 @@ void FileSizeScanner::onTableContextMenu(const QPoint& pos)
         // ---- Delete file ----
         if (QFile::remove(filePath))
         {
-            tableWidget->removeRow(row);
+            int headerRow = findGroupHeaderRow(tableWidget, row);
+            if (headerRow == -1)
+            {
+                tableWidget->removeRow(row);
+                return;
+            }
+
+            // Count how many file rows belong to this group
+            int fileCount = 0;
+            int r = headerRow + 1;
+
+            while (r < tableWidget->rowCount() &&
+                tableWidget->columnSpan(r, 0) == 1)
+            {
+                ++fileCount;
+                ++r;
+            }
+
+            if (fileCount <= 2)
+            {
+                // Remove entire group (header + files)
+                for (int i = 0; i < fileCount + 1; ++i)
+                    tableWidget->removeRow(headerRow);
+            }
+            else
+            {
+                // Remove only selected file
+                tableWidget->removeRow(row);
+            }
         }
+
         else
         {
             QMessageBox::critical(
@@ -174,6 +217,124 @@ void FileSizeScanner::onTableContextMenu(const QPoint& pos)
                 "It may be in use or you may not have permission.");
         }
     }
+    else if (selectedAction == deleteOthers)
+    {
+        int headerRow = findGroupHeaderRow(tableWidget, row);
+        if (headerRow == -1)
+            return;
+
+        QMessageBox::StandardButton reply =
+            QMessageBox::warning(
+                this,
+                "Smart Delete",
+                "This will permanently delete all other duplicate files\n"
+                "and keep only the selected file.\n\n"
+                "Do you want to continue?",
+                QMessageBox::Yes | QMessageBox::No,
+                QMessageBox::No);
+
+        if (reply != QMessageBox::Yes)
+            return;
+
+        // Identify group range
+        int startRow = headerRow + 1;
+        int endRow = startRow;
+
+        while (endRow < tableWidget->rowCount() &&
+            tableWidget->columnSpan(endRow, 0) == 1)
+        {
+            ++endRow;
+        }
+
+        // Delete all files except selected row
+        for (int r = startRow; r < endRow; ++r)
+        {
+            if (r == row)
+                continue;
+
+            QString path = tableWidget->item(r, 2)->text();
+            QFile::remove(path);
+        }
+
+        // Remove entire group from table
+        for (int r = endRow - 1; r >= headerRow; --r)
+            tableWidget->removeRow(r);
+    }
+
+    else if (selectedAction == deleteSelected)
+    {
+        QList<QTableWidgetSelectionRange> ranges =
+            tableWidget->selectedRanges();
+
+        if (ranges.isEmpty())
+            return;
+
+        QMessageBox::StandardButton reply =
+            QMessageBox::warning(
+                this,
+                "Bulk Delete",
+                "This will permanently delete all selected files.\n\n"
+                "Do you want to continue?",
+                QMessageBox::Yes | QMessageBox::No,
+                QMessageBox::No);
+
+        if (reply != QMessageBox::Yes)
+            return;
+
+        // Collect rows to delete (file rows only)
+        QSet<int> rowsToDelete;
+
+        for (const auto& range : ranges)
+        {
+            for (int r = range.topRow(); r <= range.bottomRow(); ++r)
+            {
+                // Skip group headers
+                if (tableWidget->columnSpan(r, 0) > 1)
+                    continue;
+
+                rowsToDelete.insert(r);
+            }
+        }
+
+        // Delete files from disk
+        for (int row : rowsToDelete)
+        {
+            QString path = tableWidget->item(row, 2)->text();
+            QFile::remove(path);
+        }
+
+        // Remove rows from table (bottom-up!)
+        QList<int> sortedRows = rowsToDelete.values();
+        std::sort(sortedRows.begin(), sortedRows.end(), std::greater<int>());
+
+        for (int row : sortedRows)
+            tableWidget->removeRow(row);
+
+        // Cleanup invalid groups (reuse smart logic)
+        // Scan table and remove headers with <2 files
+        for (int r = tableWidget->rowCount() - 1; r >= 0; --r)
+        {
+            if (tableWidget->columnSpan(r, 0) > 1)
+            {
+                int count = 0;
+                int i = r + 1;
+
+                while (i < tableWidget->rowCount() &&
+                    tableWidget->columnSpan(i, 0) == 1)
+                {
+                    ++count;
+                    ++i;
+                }
+
+                if (count < 2)
+                {
+                    for (int j = i - 1; j >= r; --j)
+                        tableWidget->removeRow(j);
+                }
+            }
+        }
+    }
+
 }
 
 
