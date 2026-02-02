@@ -59,5 +59,8 @@
     <ClInclude Include="FileInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TableHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

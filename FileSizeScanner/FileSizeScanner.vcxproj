@@ -102,6 +102,7 @@
     </QtMoc>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="TableHelper.h" />
     <QtRcc Include="FileSizeScanner.qrc" />
     <QtUic Include="FileSizeScanner.ui" />
     <QtMoc Include="FileSizeScanner.h" />

@@ -2,9 +2,8 @@
 
 #include <QtWidgets/QMainWindow>
 #include "ui_FileSizeScanner.h"
-#include <qpushbutton.h>
-#include <qfiledialog.h>
-#include <qtablewidget.h>
+#include <QPushButton>
+#include <QTableWidget>
 #include "ScanWorker.h"
 #include <QThread>
 
@@ -39,4 +38,3 @@ private slots:
     void on_scan_clicked();
     void onTableContextMenu(const QPoint& pos);
 };
-
