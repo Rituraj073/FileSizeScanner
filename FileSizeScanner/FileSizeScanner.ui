@@ -126,6 +126,8 @@ color: rgb(255, 85, 0);</string>
     <bool>false</bool>
    </attribute>
    <addaction name="actionCleanTable"/>
+   <addaction name="separator"/>
+   <addaction name="actionTheme"/>
   </widget>
   <widget class="QStatusBar" name="statusBar">
    <property name="cursor">
@@ -141,6 +143,20 @@ color: rgb(255, 85, 0);</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+X</string>
+   </property>
+  </action>
+  <action name="actionTheme">
+   <property name="icon">
+    <iconset theme="QIcon::ThemeIcon::AppointmentNew"/>
+   </property>
+   <property name="text">
+    <string>Theme Change</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::NoRole</enum>
    </property>
   </action>
  </widget>

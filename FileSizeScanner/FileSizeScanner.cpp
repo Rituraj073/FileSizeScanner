@@ -26,11 +26,12 @@ void FileSizeScanner::mySetupUI()
     btnScan = ui.ScanBtn;
     tableWidget = ui.tableWidget;
     cleanTable = ui.actionCleanTable;
+    themeAction = ui.actionTheme;
 
     setupTable();
-
     tableWidget->setContextMenuPolicy(Qt::CustomContextMenu); // to start menu in table by right click
 
+    connect(themeAction, &QAction::triggered, this, &FileSizeScanner::toggleTheme);
     connect(tableWidget, &QTableWidget::customContextMenuRequested, this, &FileSizeScanner::onTableContextMenu);
     connect(btnSelectFolder, &QPushButton::clicked, this, &FileSizeScanner::on_select_folder_clicked);
     connect(btnScan, &QPushButton::clicked, this, &FileSizeScanner::on_scan_clicked);
@@ -51,6 +52,24 @@ void FileSizeScanner::setupTable()
     tableWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
     tableWidget->horizontalHeader()->setStretchLastSection(true);
     tableWidget->setRowCount(0);
+}
+
+
+void FileSizeScanner::toggleTheme()
+{
+    if (!isDarkThemeEnabled)
+    {
+        qApp->setStyle("Fusion");
+        qApp->setPalette(darkPalette());
+        isDarkThemeEnabled = true;
+        themeAction->setIcon(style()->standardIcon(QStyle::SP_TitleBarUnshadeButton));
+    }
+    else
+    {
+        qApp->setPalette(lightPalette());
+        isDarkThemeEnabled = false;
+        themeAction->setIcon(style()->standardIcon(QStyle::SP_TitleBarShadeButton));
+    }
 }
 
 

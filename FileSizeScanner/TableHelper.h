@@ -40,3 +40,28 @@ static int findGroupHeaderRow(QTableWidget* table, int row)
     }
     return -1;
 }
+
+/* ---------- Helper: Dark Theme ---------- */
+static QPalette darkPalette()
+{
+    QPalette palette;
+    palette.setColor(QPalette::Window, QColor(53, 53, 53));
+    palette.setColor(QPalette::WindowText, Qt::white);
+    palette.setColor(QPalette::Base, QColor(35, 35, 35));
+    palette.setColor(QPalette::AlternateBase, QColor(53, 53, 53));
+    palette.setColor(QPalette::ToolTipBase, Qt::white);
+    palette.setColor(QPalette::ToolTipText, Qt::white);
+    palette.setColor(QPalette::Text, Qt::white);
+    palette.setColor(QPalette::Button, QColor(53, 53, 53));
+    palette.setColor(QPalette::ButtonText, Qt::white);
+    palette.setColor(QPalette::BrightText, Qt::red);
+    palette.setColor(QPalette::Highlight, QColor(42, 130, 218));
+    palette.setColor(QPalette::HighlightedText, Qt::black);
+    return palette;
+}
+
+/* ---------- Helper: Light Theme ---------- */
+static QPalette lightPalette()
+{
+    return qApp->style()->standardPalette();
+}

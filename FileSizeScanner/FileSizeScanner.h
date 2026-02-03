@@ -20,12 +20,14 @@ private:
     void setupTable();
     void StartScanWorker(const QString& path);
     bool fillTable();
+    bool isDarkThemeEnabled = false;
 
     Ui::FileSizeScannerClass ui;
     QLineEdit* lineEditPath;
     QPushButton* btnSelectFolder;
     QPushButton* btnScan;
     QAction* cleanTable;
+    QAction* themeAction;
     QTableWidget* tableWidget;
 
     QThread* scanThread = nullptr;
@@ -37,4 +39,5 @@ private slots:
     void on_select_folder_clicked();
     void on_scan_clicked();
     void onTableContextMenu(const QPoint& pos);
+    void toggleTheme();
 };
