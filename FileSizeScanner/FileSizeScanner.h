@@ -20,6 +20,7 @@ private:
     void setupTable();
     void StartScanWorker(const QString& path);
     bool fillTable();
+    void selectAllExceptOnePerGroup();
     bool isDarkThemeEnabled = false;
 
     Ui::FileSizeScannerClass ui;

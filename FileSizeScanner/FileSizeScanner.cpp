@@ -159,6 +159,7 @@ void FileSizeScanner::StartScanWorker(const QString& path)
         {
             sizeMap = result;
             bool hasDuplicates = fillTable();
+            selectAllExceptOnePerGroup();
 
             progressDialog->close();
             progressDialog->deleteLater();
@@ -211,6 +212,48 @@ bool FileSizeScanner::fillTable()
         }
     }
     return hasDuplicates;
+}
+
+
+void FileSizeScanner::selectAllExceptOnePerGroup()
+{
+    tableWidget->clearSelection();
+
+    QItemSelection selection;
+    const int totalRows = tableWidget->rowCount();
+    const int lastCol = tableWidget->columnCount() - 1;
+
+    for (int r = 0; r < totalRows; ++r)
+    {
+        // Identify group header rows (they span columns)
+        if (tableWidget->columnSpan(r, 0) > 1)
+        {
+            int fileRow = r + 1;
+            bool keeperTaken = false;
+
+            // Collect every file row in this group except the first (keeper)
+            while (fileRow < totalRows && tableWidget->columnSpan(fileRow, 0) == 1)
+            {
+                if (!keeperTaken)
+                {
+                    keeperTaken = true; // skip this one (keeper)
+                }
+                else
+                {
+                    QModelIndex topLeft = tableWidget->model()->index(fileRow, 0);
+                    QModelIndex bottomRight = tableWidget->model()->index(fileRow, lastCol);
+                    selection.select(topLeft, bottomRight);
+                }
+                ++fileRow;
+            }
+
+            // Jump outer loop to row after this group
+            r = fileRow - 1;
+        }
+    }
+
+    // Apply the accumulated selection in one operation (select rows)
+    tableWidget->selectionModel()->select(selection, QItemSelectionModel::Select | QItemSelectionModel::Rows);
 }
 
 
