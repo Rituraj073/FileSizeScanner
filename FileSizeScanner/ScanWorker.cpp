@@ -6,11 +6,22 @@
 ScanWorker::ScanWorker(QObject* parent)
     : QObject(parent){}
 
-void ScanWorker::scan(const QString& path)
+void ScanWorker::scan(const QString& path, const QStringList& allowedExtensions)
 {
     m_cancelRequested = false;
 
-    // -------- Phase 1: Count files --------
+    // Normalize allowed extensions into a set (no leading dot, lower-case)
+    QSet<QString> allowed;
+    for (const QString& e : allowedExtensions)
+    {
+        QString n = e.trimmed().toLower();
+        if (n.startsWith('.'))
+            n.remove(0, 1);
+        if (!n.isEmpty())
+            allowed.insert(n);
+    }
+
+    // -------- Phase 1: Count files (respecting filter) --------
     int totalFiles = 0;
     {
         QDirIterator counter(path, QDir::Files, QDirIterator::Subdirectories);
@@ -18,13 +29,20 @@ void ScanWorker::scan(const QString& path)
         {
             if (m_cancelRequested)
                 return;
-            counter.next();
+            QString filePath = counter.next();
+            if (!allowed.isEmpty())
+            {
+                QFileInfo info(filePath);
+                QString ext = info.suffix().toLower();
+                if (!allowed.contains(ext))
+                    continue;
+            }
             ++totalFiles;
         }
     }
     emit progressRange(totalFiles);
 
-    // -------- Phase 2: Actual scan --------
+    // -------- Phase 2: Actual scan (respecting filter) --------
     std::map<quint64, std::vector<FileInfo>> localMap;
     int scanned = 0;
 
@@ -37,7 +55,15 @@ void ScanWorker::scan(const QString& path)
             return;
         }
 
-        QFileInfo info(it.next());
+        QString filePath = it.next();
+        QFileInfo info(filePath);
+
+        if (!allowed.isEmpty())
+        {
+            QString ext = info.suffix().toLower();
+            if (!allowed.contains(ext))
+                continue;
+        }
 
         FileInfo file;
         file.fileName = info.fileName();

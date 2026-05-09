@@ -115,10 +115,17 @@ void FileSizeScanner::StartScanWorker(const QString& path)
     btnScan->setEnabled(false);
     tableWidget->setRowCount(0);
 
+    // Build the allowed extensions list (normalized without leading dot)
+    QStringList allowedExtensions = {
+        "jpg", "jpeg", "png", "gif", "bmp", "tiff", "tif", "psd", "webp", "svg",
+        "mp4", "mkv", "mov", "webm", "m4v", "mp3",
+        "pdf", "doc", "docx", "txt", "xls", "xlsx", "csv", "ppt", "pptx", "zip", "rar"
+    };
+
     scanThread = new QThread(this);
     worker = new ScanWorker();
     worker->moveToThread(scanThread);
-    
+
     // Set progress range when total count is known
     connect(worker, &ScanWorker::progressRange,
         progressDialog, &QProgressDialog::setMaximum);
@@ -137,8 +144,9 @@ void FileSizeScanner::StartScanWorker(const QString& path)
             );
         });
 
+    // Start scanning in worker thread, pass allowedExtensions
     connect(scanThread, &QThread::started,
-        [=]() { worker->scan(path); });
+        [=]() { worker->scan(path, allowedExtensions); });
 
     connect(progressDialog, &QProgressDialog::canceled,
         this, [=]()

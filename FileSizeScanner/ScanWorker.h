@@ -16,7 +16,7 @@ private:
     std::atomic_bool m_cancelRequested{ false };
 
 public slots:
-    void scan(const QString& path);
+    void scan(const QString& path, const QStringList& allowedExtensions);
     void cancel();
 
 signals:
